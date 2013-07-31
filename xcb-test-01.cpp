@@ -1,9 +1,10 @@
 
 #include <cstdlib>
 #include <cstdio>
+#include <unistd.h>
 #include <xcb/xcb.h>
 
-void printScreenStruct ( xcb_screen_t * screen, int index ) {
+void printScreen ( const xcb_screen_t * screen, int index ) {
 	if ( screen ) {
 		printf( "\n" );
 		printf( "Details for screen at index %d:\n", index );
@@ -25,9 +26,17 @@ void printScreenStruct ( xcb_screen_t * screen, int index ) {
 		printf( "  allowed_depths_len:       %hd\n", screen->allowed_depths_len );
 		printf( "\n" );
 	} else {
-		printf ( "Screen at index %d is NULL.", index );
+		printf( "Screen at index %d is NULL.", index );
 	}
 	printf( "\n" );
+}
+
+void printScreenIterator ( const xcb_screen_iterator_t * iter ) {
+	if ( iter ) {
+		printf( "TODO: show iterator details" );
+	} else {
+		printf( "Screen iterator is NULL." );
+	}
 }
 
 int main () {
@@ -53,11 +62,36 @@ int main () {
 		/* iterate to the screen we got in xcb_connect */
 
 		for ( int i = 0; i < screenNumber; i++ ) {
-			printScreenStruct( screenIterator.data, i );
+			printScreen( screenIterator.data, i );
 			xcb_screen_next( &screenIterator );
 		}
 
-		printScreenStruct( screenIterator.data, screenNumber );
+		printScreen( screenIterator.data, screenNumber );
+
+		xcb_screen_t * screen = screenIterator.data;
+		xcb_window_t window = xcb_generate_id( xcbConnection );
+
+		xcb_create_window(
+			xcbConnection,
+			XCB_COPY_FROM_PARENT,
+			window,
+			screen->root,
+			50,
+			50,
+			150,
+			150,
+			10,
+			XCB_WINDOW_CLASS_INPUT_OUTPUT,
+			screen->root_visual,
+			0,
+			NULL
+		);
+
+		xcb_map_window( xcbConnection, window );
+
+		xcb_flush( xcbConnection );
+
+		pause();
 
 		xcb_disconnect( xcbConnection );
 	} else {
