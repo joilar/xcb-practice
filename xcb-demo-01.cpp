@@ -1,3 +1,8 @@
+// This source code has been reformatted a bit and fixed in a couple of
+// places, but originates from the XCB tutorial located here:
+// http://xcb.freedesktop.org/tutorial/
+//
+// It's an exercise and comparison of ways one can use Xlib and XCB.
 
 #include <stdlib.h>
 #include <stdio.h>
